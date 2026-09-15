@@ -1,0 +1,13 @@
+{
+  "name": "med-fitness-website",
+  "version": "1.0.0",
+  "description": "Precision Performance Wear",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7"
+  }
+}
