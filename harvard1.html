@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Academic Courses | Cyberpunk Catalog</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       1. COLOR PALETTE & VARIABLES (CYBERPUNK THEME)
+       ========================================================================== */
+    :root {
+      --bg-main: #0a0b10;
+      --bg-surface: #12141d;
+      --bg-surface-hover: #1a1d2a;
+      --border-color: rgba(0, 243, 255, 0.15);
+      
+      /* Neon Accents */
+      --cyan: #00f3ff;
+      --pink: #ff0055;
+      --purple: #9d00ff;
+      
+      --text-main: #f1f5f9;
+      --text-muted: #8892b0;
+      --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-heading: 'Space Grotesk', sans-serif;
+      --radius: 12px;
+      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-main: #f4f6fb;
+      --bg-surface: #ffffff;
+      --bg-surface-hover: #eef2f7;
+      --border-color: rgba(157, 0, 255, 0.15);
+      --text-main: #0b0c10;
+      --text-muted: #525866;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.5;
+      min-height: 100vh;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(0, 243, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(255, 0, 85, 0.05) 0%, transparent 40%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ==========================================================================
+       2. HEADER SECTION
+       ========================================================================== */
+    header {
+      padding: 56px 0 32px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--cyan);
+      margin-bottom: 12px;
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+    }
+
+    h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    h1 span.accent-text {
+      color: var(--cyan);
+      background: linear-gradient(135deg, var(--cyan), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      line-height: 1.6;
+    }
+
+    .value-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 28px;
+      max-width: 760px;
+    }
+
+    .value-item {
+      background: linear-gradient(135deg, rgba(0, 243, 255, 0.08), rgba(157, 0, 255, 0.05));
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .value-item strong {
+      display: block;
+      font-family: var(--font-heading);
+      font-size: clamp(1.2rem, 2vw, 1.9rem);
+      color: var(--cyan);
+      margin-bottom: 6px;
+    }
+
+    .value-item span {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 0.03em;
+    }
+
+    /* ==========================================================================
+       3. CONTROLS & FILTER BAR
+       ========================================================================== */
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: var(--bg-main);
+      backdrop-filter: blur(10px);
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1 1 240px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 16px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.25);
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .chip-btn {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .chip-btn:hover {
+      color: var(--text-main);
+      border-color: var(--cyan);
+    }
+
+    .chip-btn.active {
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #0a0b10;
+      font-weight: 700;
+      border-color: transparent;
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
+    }
+
+    .theme-btn {
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.825rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .theme-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      background-color: var(--bg-surface);
+    }
+
+    /* ==========================================================================
+       4. COURSE CARDS GRID
+       ========================================================================== */
+    .catalog-section {
+      padding: 40px 0 60px;
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .course-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .course-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--cyan);
+      box-shadow: 0 8px 24px rgba(0, 243, 255, 0.15);
+    }
+
+    .card-thumbnail {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-color: #000;
+    }
+
+    .card-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.9;
+    }
+
+    .card-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(10, 11, 16, 0.85);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .institution-name {
+      font-size: 0.775rem;
+      font-weight: 700;
+      color: var(--pink);
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+
+    .course-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 8px;
+    }
+
+    .course-summary {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-footer-meta {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.775rem;
+      color: var(--text-muted);
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 60px 0;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    /* ==========================================================================
+       5. MODAL DIALOG
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(10, 11, 16, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-window {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--cyan);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 820px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      background: rgba(10, 11, 16, 0.8);
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .close-btn:hover {
+      background: var(--cyan);
+      color: #0a0b10;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      background: #000;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .modal-content {
+      padding: 28px;
+    }
+
+    .modal-header-meta {
+      margin-bottom: 20px;
+    }
+
+    .modal-header-meta h2 {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .modal-header-meta .sub {
+      color: var(--cyan);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .course-details-pills {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .detail-pill {
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.825rem;
+      color: var(--text-muted);
+    }
+
+    .detail-pill strong {
+      color: var(--text-main);
+    }
+
+    .section-heading {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin: 20px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--pink);
+    }
+
+    .modal-description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 24px;
+    }
+
+    .instructor-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      border-radius: var(--radius);
+    }
+
+    .instructor-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 2px solid var(--cyan);
+    }
+
+    .instructor-info h4 {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .instructor-info .role {
+      font-size: 0.775rem;
+      color: var(--cyan);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .instructor-info p {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 24px 0;
+      text-align: center;
+      font-size: 0.825rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <span class="header-tag">// Global Learning Directory</span>
+      <h1>Master skills with <span class="accent-text">free university courses.</span></h1>
+      <p class="subtitle">Select any course to open the interactive view featuring video lectures, professor bios, and full syllabus breakdowns.</p>
+
+      <div class="value-strip" aria-label="Website values">
+        <div class="value-item">
+          <strong>500+</strong>
+          <span>Free courses</span>
+        </div>
+        <div class="value-item">
+          <strong>20+</strong>
+          <span>Top universities</span>
+        </div>
+        <div class="value-item">
+          <strong>100%</strong>
+          <span>Open learning access</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search courses, universities, or professors...">
+      </div>
+      <div class="filter-group">
+        <button class="chip-btn active" data-filter="all">All</button>
+        <button class="chip-btn" data-filter="cs">Computer Science</button>
+        <button class="chip-btn" data-filter="math">Math & Science</button>
+        <button class="chip-btn" data-filter="business">Business & Economics</button>
+        <button class="chip-btn" data-filter="humanities">Humanities & Law</button>
+      </div>
+      <button class="theme-btn" id="themeToggle">Theme</button>
+    </div>
+
+    <main class="catalog-section">
+      <div class="course-grid" id="courseGrid"></div>
+      <div class="no-results" id="noResults">No courses match your search criteria.</div>
+    </main>
+
+    <footer>
+      <p>© Catalog managed by Mohamed.FD — Free academic materials indexed for educational purposes.</p>
+    </footer>
+  </div>
+
+  <!-- Modal Component -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
+    <div class="modal-window">
+      <button class="close-btn" id="closeModal" aria-label="Close modal">✕</button>
+      
+      <div class="video-wrapper" id="modalVideoContainer">
+        <!-- Dynamic iframe injection -->
+      </div>
+
+      <div class="modal-content">
+        <div class="modal-header-meta">
+          <h2 id="modalTitle">Course Title</h2>
+          <div class="sub" id="modalUniversity">University Name</div>
+        </div>
+
+        <div class="course-details-pills">
+          <div class="detail-pill">Duration: <strong id="modalDuration">-</strong></div>
+          <div class="detail-pill">Category: <strong id="modalCategory">-</strong></div>
+          <div class="detail-pill">Platform: <strong id="modalPlatform">-</strong></div>
+        </div>
+
+        <div class="section-heading">About This Course</div>
+        <p class="modal-description" id="modalDescription"></p>
+
+        <div class="section-heading">Instructor</div>
+        <div class="instructor-card">
+          <img id="modalProfAvatar" class="instructor-avatar" src="" alt="Instructor">
+          <div class="instructor-info">
+            <h4 id="modalProfName">Instructor Name</h4>
+            <div class="role" id="modalProfRole">Role / Department</div>
+            <p id="modalProfBio">Biography statement goes here.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Course Dataset
+    const courses = [
+      {
+        id: 1,
+        code: "CS50x",
+        category: "cs",
+        categoryLabel: "Computer Science",
+        title: "Introduction to Computer Science",
+        university: "Harvard University",
+        platform: "edX / YouTube",
+        duration: "12 Weeks (6-12 hrs/week)",
+        description: "An entry-level course teaching students how to think algorithmically and solve problems efficiently. Topics include abstraction, algorithms, data structures, security, software engineering, and web development in C, Python, SQL, and JavaScript.",
+        instructor: {
+          name: "David J. Malan",
+          role: "Gordon McKay Professor of the Practice of Computer Science",
+          bio: "Teaches CS50 at Harvard University and works on innovative open-source educational platforms.",
+          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop"
+        },
+        thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&auto=format&fit=crop",
+        embedUrl: "https://www.youtube.com/embed/gmuTjeQUbTM"
+      },
+      {
+        id: 2,
+        code: "CS229",
+        category: "cs",
+        categoryLabel: "Computer Science",
+        title: "Machine Learning",
+        university: "Stanford University",
+        platform: "Stanford Online",
+        duration: "10 Weeks (10-12 hrs/week)",
+        description: "Provides a broad overview of machine learning, data mining, and statistical pattern recognition. Covers supervised learning, unsupervised learning, deep learning best practices, and practical application.",
+        instructor: {
+          name: "Andrew Ng",
+          role: "Adjunct Professor at Stanford University",
+          bio: "Co-founder of Coursera, founder of DeepLearning.AI, and pioneer in AI education.",
+          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop"
+        },
+        thumbnail: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=600&auto=format&fit=crop",
+        embedUrl: "https://www.youtube.com/embed/videoseries?list=PLoROMvodv4rMiGQp3WXShtMGgzqpfVfbU"
+      },
+      {
+        id: 3,
+        code: "18.06",
+        category: "math",
+        categoryLabel: "Math & Science",
+        title: "Linear Algebra",
+        university: "MIT",
+        platform: "MIT OpenCourseWare",
+        duration: "14 Weeks (8 hrs/week)",
+        description: "Fundamental course covering matrix theory and linear algebra. Highlights systems of equations, vector spaces, determinants, eigenvalues, singular value decomposition, and real-world computational applications.",
+        instructor: {
+          name: "Gilbert Strang",
+          role: "Professor of Mathematics at MIT",
+          bio: "Renowned American mathematician known for his clear teaching style and foundational linear algebra textbooks.",
+          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop"
+        },
+        thumbnail: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&auto=format&fit=crop",
+        embedUrl: "https://www.youtube.com/embed/videoseries?list=PLE7DDD91010BC51F8"
+      },
+      {
+        id: 4,
+        code: "Gov 1061",
+        category: "humanities",
+        categoryLabel: "Humanities & Law",
+        title: "Justice: What's the Right Thing to Do?",
+        university: "Harvard University",
+        platform: "YouTube",
+        duration: "12 Weeks (4 hrs/week)",
+        description: "An exploration of classical and modern political philosophy through critical analysis of contemporary moral dilemmas, law cases, and social debates.",
+        instructor: {
+          name: "Michael J. Sandel",
+          role: "Professor of Government",
+          bio: "Author and political philosopher whose lectures on moral reasoning have engaged audiences globally.",
+          avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop"
+        },
+        thumbnail: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&auto=format&fit=crop",
+        embedUrl: "https://www.youtube.com/embed/videoseries?list=PL8D3FC428A59982BE"
+      },
+      {
+        id: 5,
+        code: "Econ 252",
+        category: "business",
+        categoryLabel: "Business & Economics",
+        title: "Financial Markets",
+        university: "Yale University",
+        platform: "Open Yale Courses",
+        duration: "13 Weeks (5 hrs/week)",
+        description: "An introduction to the methods and institutions that allow human society to manage risk and foster enterprise. Covers banking, real estate, behavioral finance, and global markets.",
+        instructor: {
+          name: "Robert J. Shiller",
+          role: "Sterling Professor of Economics at Yale",
+          bio: "Nobel Prize laureate in Economic Sciences recognized for his research on market volatility and asset pricing.",
+          avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop"
+        },
+        thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&auto=format&fit=crop",
+        embedUrl: "https://www.youtube.com/embed/videoseries?list=PL8FB14A2200B87185"
+      }
+    ];
+
+    // DOM Elements
+    const courseGrid = document.getElementById('courseGrid');
+    const searchInput = document.getElementById('searchInput');
+    const filterButtons = document.querySelectorAll('.chip-btn');
+    const noResults = document.getElementById('noResults');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const closeModalBtn = document.getElementById('closeModal');
+    const themeToggleBtn = document.getElementById('themeToggle');
+
+    let currentFilter = 'all';
+
+    // Render Grid
+    function renderCourses() {
+      courseGrid.innerHTML = courses.map(course => `
+        <article class="course-card" onclick="openModal(${course.id})">
+          <div class="card-thumbnail">
+            <img src="${course.thumbnail}" alt="${course.title}" loading="lazy">
+            <span class="card-tag">${course.categoryLabel}</span>
+          </div>
+          <div class="card-body">
+            <div class="institution-name">${course.university} • ${course.code}</div>
+            <h3 class="course-title">${course.title}</h3>
+            <p class="course-summary">${course.description}</p>
+            <div class="card-footer-meta">
+              <span>${course.instructor.name}</span>
+              <span>${course.duration.split(' ')[0]} ${course.duration.split(' ')[1]}</span>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // Filter Logic
+    function filterCatalog() {
+      const query = searchInput.value.toLowerCase().trim();
+      let visibleCount = 0;
+
+      document.querySelectorAll('.course-card').forEach((card, index) => {
+        const course = courses[index];
+        const matchesCategory = currentFilter === 'all' || course.category === currentFilter;
+        const matchesSearch = course.title.toLowerCase().includes(query) || 
+                              course.instructor.name.toLowerCase().includes(query) ||
+                              course.university.toLowerCase().includes(query);
+
+        if (matchesCategory && matchesSearch) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    // Modal Operations
+    function openModal(id) {
+      const course = courses.find(c => c.id === id);
+      if (!course) return;
+
+      document.getElementById('modalVideoContainer').innerHTML = `
+        <iframe src="${course.embedUrl}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      `;
+
+      document.getElementById('modalTitle').textContent = course.title;
+      document.getElementById('modalUniversity').textContent = `${course.university} (${course.code})`;
+      document.getElementById('modalDuration').textContent = course.duration;
+      document.getElementById('modalCategory').textContent = course.categoryLabel;
+      document.getElementById('modalPlatform').textContent = course.platform;
+      document.getElementById('modalDescription').textContent = course.description;
+
+      document.getElementById('modalProfAvatar').src = course.instructor.avatar;
+      document.getElementById('modalProfName').textContent = course.instructor.name;
+      document.getElementById('modalProfRole').textContent = course.instructor.role;
+      document.getElementById('modalProfBio').textContent = course.instructor.bio;
+
+      modalOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+      document.getElementById('modalVideoContainer').innerHTML = ''; // Stop video
+      document.body.style.overflow = '';
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', filterCatalog);
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        filterCatalog();
+      });
+    });
+
+    closeModalBtn.addEventListener('click', closeModal);
+
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    themeToggleBtn.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
+    });
+
+    // Initialize
+    renderCourses();
+  </script>
+</body>
+</html>
